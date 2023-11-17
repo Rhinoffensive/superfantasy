@@ -26,21 +26,27 @@ if not sc.token_is_valid():
     sc.refresh_access_token()
 
 lg = yfa.league.League(sc, league_id)
-teams = yfa.league.League(sc, league_id).teams()
-teams_list = {}
-weeks_list = []
-for team_key in teams:
-    teams_list[teams[team_key]['name']] = team_key
 
-for i in range(1, lg.current_week() + 1):
-    weeks_list.append("Week " + str(i))
+
+
+# Fetch user's teams
+teams = lg.teams()
+teams_list = {team['name']: key for key, team in teams.items()}
+team_options = sorted(teams_list.keys())
+
+# Fetch weeks
+weeks_list = [f"Week {i}" for i in range(1, lg.current_week() + 1)]
+
+# for i in range(1, lg.current_week() + 1):
+#     weeks_list.append("Week " + str(i))
 #print(lg.end_week())
 #print(len(weeks_list))
 # Step 4: Parse and print the team names
 st.sidebar.title("NBA Super Fantazi")
 
-team_options = list(teams_list.keys())
-team_select = st.sidebar.selectbox("Select a team",team_options)
+
+
+team_select = st.sidebar.selectbox("Select a team",team_options) 
 
 mode_options = ["Alternate Universe", "Alternate Universe - Matchups", "Power Rankings", "Medal Board"]
 mode_select = st.sidebar.selectbox("Select mode", mode_options)
@@ -109,8 +115,8 @@ def get_team_stats(team_name, major_bool = False):
 def calculate_weekly_score(t1,t2,idx):
     t1 = pd.DataFrame(t1).reset_index(drop=True)
     t2 = pd.DataFrame(t2).transpose().reset_index(drop=True)
-    print(t1)
-    print(t2)
+    # print(t1)
+    # print(t2)
     global cross_color_df
     t1 = t1.drop(columns=['Team_Name','Is_Major'])
     t2 = t2.drop(columns=['Team_Name','Is_Major'])
@@ -222,7 +228,7 @@ def get_cross_map_matchup():
 
         idx += 1
 
-    print(cross_points_matchup_df)
+    # print(cross_points_matchup_df)
     return cross_points_matchup_df
 
 def ewlt_get(cross_map):
@@ -259,7 +265,7 @@ def update_other_team_color():
     idx = cross_points_df[cross_points_df['Team_Name'] == other_team].index
     cross_color_df.loc[idx, 'Team_Name'] = "Match"
     cross_color_df.loc[idx, 'Score'] = "Match"
-    print(cross_points_df)
+    # print(cross_points_df)
 
 def apply_color(dataframe, colors):
     styled_df = pd.DataFrame('', index=dataframe.index, columns=dataframe.columns)
@@ -271,7 +277,7 @@ def apply_color(dataframe, colors):
 
 def render_medal_board():
     matchups = lg.matchups(week_select.split(' ')[1])['fantasy_content']['league'][1]['scoreboard']['0']['matchups']
-    print("Match count" + str(matchups['count']))
+    # print("Match count" + str(matchups['count']))
     league_matchups_list = []
     for i in range(matchups['count']):
         #display(pd.json_normalize(matchupss[m]['matchup']))
@@ -361,7 +367,7 @@ elif mode_select == "Power Rankings":
         week_matchups = matchups['fantasy_content']['league'][1]['scoreboard']['0']['matchups']
         
         weekly_team_stats = get_team_stats("", major_bool=False)
-        print(weekly_team_stats)
+        # print(weekly_team_stats)
         for team in teams_list:
             chg_idx = week_team_stats[weekly_team_stats['Team_Name'] == team].index
             weekly_team_stats.loc[chg_idx, 'Is_Major'] = True
