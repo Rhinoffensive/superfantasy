@@ -17,7 +17,7 @@ st.set_page_config(layout="wide")
 # Fetch user's teams
 sc = OAuth2(None, None, from_file='oauth2.json')
 ##Fantasy League 2023-2024 ID
-league_id = '428.l.17054'
+league_id = '454.l.41446'
 image = open('logo.png', 'rb').read()
 st.sidebar.image(image, caption='', width=100)
 
