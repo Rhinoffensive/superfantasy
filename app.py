@@ -16,8 +16,8 @@ st.set_page_config(layout="wide")
 
 # Fetch user's teams
 sc = OAuth2(None, None, from_file='oauth2.json')
-##Fantasy League 2023-2024 ID
-league_id = '454.l.41446'
+##Fantasy League 2025-2026 ID
+league_id = '466.l.95519'
 image = open('logo.png', 'rb').read()
 st.sidebar.image(image, caption='', width=100)
 
@@ -541,3 +541,4 @@ elif mode_select == "Total Stats":
     df_color_codes = color_total_df.map(color_map_total.get)
     style_cross = team_stats.style.apply(apply_color, colors=df_color_codes, axis=None)
     st.dataframe(style_cross, height=600, use_container_width=True)
+
