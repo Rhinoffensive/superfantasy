@@ -1,3 +1,9 @@
+import json
+import os
+import stat
+from pathlib import Path
+
+from dotenv import load_dotenv
 from yahoo_oauth import OAuth2
 import yahoo_fantasy_api as yfa
 import streamlit as st
@@ -14,10 +20,36 @@ Bronze_Medal = "🥉"
 
 st.set_page_config(layout="wide")
 
-# Fetch user's teams
-sc = OAuth2(None, None, from_file='oauth2.json')
-##Fantasy League 2025-2026 ID
-league_id = '466.l.95519'
+# Credentials come from the environment (or a gitignored .env), never from a
+# file in the repo. The token cache lives in .cache/, also gitignored.
+load_dotenv()
+CACHE_DIR = Path(__file__).resolve().parent / ".cache"
+TOKEN_FILE = CACHE_DIR / "oauth2.json"
+
+if (Path(__file__).resolve().parent / "oauth2.json").exists():
+    st.error(
+        "Found oauth2.json in the repo folder. Credentials belong in .env and "
+        f"{TOKEN_FILE}, both gitignored. Move it and rotate the tokens."
+    )
+    st.stop()
+
+if not TOKEN_FILE.exists():
+    key = os.getenv("YAHOO_CONSUMER_KEY")
+    secret = os.getenv("YAHOO_CONSUMER_SECRET")
+    if not key or not secret:
+        st.error(
+            "Set YAHOO_CONSUMER_KEY and YAHOO_CONSUMER_SECRET in .env "
+            "(copy .env.example). Create an app at "
+            "https://developer.yahoo.com/apps/ with Fantasy Sports read access."
+        )
+        st.stop()
+    CACHE_DIR.mkdir(exist_ok=True)
+    TOKEN_FILE.write_text(json.dumps({"consumer_key": key, "consumer_secret": secret}))
+    TOKEN_FILE.chmod(stat.S_IRUSR | stat.S_IWUSR)
+
+sc = OAuth2(None, None, from_file=str(TOKEN_FILE))
+
+league_id = os.getenv("YAHOO_LEAGUE_KEY", "466.l.95519")
 image = open('logo.png', 'rb').read()
 st.sidebar.image(image, caption='', width=100)
 
@@ -40,6 +72,10 @@ for i in range(1, lg.current_week() + 1):
 
 # Step 4: Parse and print the team names
 st.sidebar.title("NBA Super Fantazi")
+st.sidebar.caption(
+    "Fantasy data provided by "
+    "[Yahoo Fantasy](https://basketball.fantasysports.yahoo.com/)"
+)
 
 team_options = sorted(teams_list.keys())
 team_select = st.sidebar.selectbox("Select a team",team_options)
