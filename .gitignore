@@ -1,0 +1,16 @@
+# ---- Credentials: never commit these ----
+.env
+.env.*
+!.env.example
+oauth2.json
+*oauth2*.json
+.cache/
+
+# ---- Python ----
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+
+.DS_Store
