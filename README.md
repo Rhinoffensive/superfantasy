@@ -37,9 +37,3 @@ permission is no longer self-serve and requires an approved application at
 The first run opens a Yahoo consent URL; the token is then cached in `.cache/`
 and refreshed automatically.
 
-## Credentials
-
-`.env` and `.cache/` are gitignored and must stay that way. **Never commit a
-credentials file.** Earlier revisions of this repository committed
-`oauth2.json` containing a live consumer secret and refresh token; the app now
-refuses to start if it finds that file, to stop it happening again.
